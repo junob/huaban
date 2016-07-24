@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>画板</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            cursor:pointer;
+        }
+        html,body{
+            width:100%;
+            height:100%;
+            background: url(2.png);
+            background-size:cover;
+        }
+        .canvas{
+            position: absolute;
+            top:50px;
+            right:50px;
+            width:900px;
+            height:565px;
+            overflow: hidden;
+        }
+        canvas{
+            background-color: #ccc;
+        }
+        .set{
+            width:300px;
+            height:550px;
+            position: absolute;
+            top:50px;
+            left:50px;
+        }
+        .shape{
+            height:120px;
+            border-bottom: 1px dashed #000;
+        }
+        .bian,.jiao,.num{
+            width:80px;
+            height:40px;
+            float:left;
+            margin-right:20px;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height:40px;
+            color:#fff;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .line,.arc,.pen,.rect{
+            width:55px;
+            height:40px;
+            float:left;
+            margin-right:20px;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height:40px;
+            color:#fff;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .num input{
+            width:30px;
+            border:none;
+            font-size: 16px;
+            color:#fff;
+            outline:none;
+            background-color: transparent;
+        }
+        .color{
+            width:100%;
+            height:44px;
+            margin-top: 20px;
+            border-bottom: 1px dashed #000;
+        }
+        .lk,.tc{
+            width:120px;
+            height:40px;
+            margin-left: 20px;
+            float:left;
+        }
+        .xian,.xp{
+            width:260px;
+            height:40px;
+            padding:20px 20px;
+            border-bottom: 1px dashed #000;
+            position: relative;
+            line-height:40px;
+        }
+        .xiannum{
+            width:40px;
+            background-color: transparent;
+            border:none;
+            font-size: 16px;
+            outline:none;
+        }
+        .d,.zz,.x{
+            width:50px;
+            height:40px;
+            background-color: rgba(0,0,0,0.4);
+            position: absolute;
+            top:20px;
+            left:120px;
+            color:#fff;
+            font-size: 16px;
+            line-height:40px;
+            text-align: center;
+        }
+        .zz{
+            left:180px;
+        }
+        .x{
+            left:240px;
+        }
+        .back,.xz{
+            width:300px;
+            height:80px;
+            border-bottom: 1px dashed #000;
+        }
+        .back-item,.new,.save,.xz-xz{
+            width:80px;
+            height:40px;
+            margin: 20px 10px;
+            text-align: center;
+            line-height:40px;
+            color:#fff;
+            background-color: rgba(0,0,0,0.4);
+            float:left;
+
+        }
+        .d1,.zz1,.x1{
+             width:50px;
+             height:40px;
+             background-color: rgba(0,0,0,0.4);
+             position: absolute;
+             top:20px;
+             left:90px;
+             color:#fff;
+             font-size: 16px;
+             line-height:40px;
+             text-align: center;
+         }
+        .zz1{
+            left:165px;
+        }
+        .x1{
+            left:240px;
+        }
+    </style>
+</head>
+<body>
+    <div class="set">
+        <div class="shape">
+            <div class="line" data-a="line">直线</div>
+            <div class="arc" data-a="arc">圆</div>
+            <div class="rect" data-a="rect">矩形</div>
+            <div class="pen" data-a="pen">画笔</div>
+            <div class="bian" data-a="bian">多边形</div>
+            <div class="jiao" data-a="jiao">多角形</div>
+            <div class="num">
+                边：<input type="text" placeholder="5" value="5" class="biannum">
+            </div>
+        </div>
+        <div class="color">
+            <div class="lk">
+                轮廓：<input type="color" class="lk1">
+            </div>
+            <div class="tc">
+                填充：<input type="color" class="tc1">
+            </div>
+        </div>
+        <div class="xian">
+            线条：<input type="number" min="1" max="10" value="1" class="xiannum">
+            <div class="d">粗</div>
+            <div class="zz">中</div>
+            <div class="x">细</div>
+        </div>
+        <div class="back">
+            <div class="back-item">后退</div>
+            <div class="new">新建</div>
+            <div class="save">保存</div>
+        </div>
+        <div class="xp">橡皮 :
+            <div class="d1 dc1" data-a="30">大</div>
+            <div class="zz1 dc1" data-a="25">中</div>
+            <div class="x1 dc1" data-a="20">小</div>
+        </div>
+        <!-- <div class="xz">
+            <div class="xz-xz">选择</div>
+        </div> -->
+    </div>
+    <div class="canvas">
+        <canvas width="900" height="565"></canvas>
+        <div class="cdc" style="width:900px;height:565px;position: absolute;top:0;left:0;z-index: 333;">
+        </div>
+        <div class="dcxp"></div>
+        <div class="selectarea"></div>
+        <div class="newts">
+            <div class="news1">是否要保存</div>
+            <div class="news2">确定</div>
+            <div class="news3">取消</div>
+        </div>
+    </div>
+    <style>
+        .selectarea{
+            border:1px dashed #333;
+            position: absolute;
+            top:0;
+            left:0;
+        }
+        .newts{
+            width:300px;
+            height:200px;
+            position: absolute;
+            top:100px;
+            left:160px;
+            z-index: 444;
+            background-color: rgba(255,255,255,0.7);
+            box-shadow: 0 0 6px #000;
+            display: none;
+        }
+        .news1{
+            height:100px;
+            line-height: 100px;
+            font-size: 30px;
+            text-align: center;
+        }
+        .news2,.news3{
+            width:80px;
+            height:40px;
+            background-color: #49414D;
+            position: absolute;
+            top:120px;
+            left:50px;
+            line-height:40px;
+            color:#fff;
+            text-align: center;
+        }
+        .news3{
+            left:170px;
+        }
+        .dcxp{
+            width:10px;
+            height:10px;
+            border-radius: 50%;
+            position: absolute;
+            top:-30px;left:-30px;
+            background: url(1.png)no-repeat center;
+            background-size:cover;
+        }
+    </style>
+</body>
+<script src="jquery.js"></script>
+<script src="index.js"></script>
+<script>
+    window.onload=function () {
+        var canvas=document.getElementsByTagName("canvas")[0];
+        var cobj=canvas.getContext("2d");
+        var dobj=document.getElementsByClassName("cdc")[0];
+        var shape1=new shape(canvas,cobj,dobj);
+        var biannum=document.getElementsByClassName("biannum")[0];
+        var lk=document.getElementsByClassName("lk")[0];
+        var lk1=document.getElementsByClassName("lk1")[0];
+        var tc=document.getElementsByClassName("tc")[0];
+        var tc1=document.getElementsByClassName("tc1")[0];
+        tc1.onchange=function () {
+            shape1.fillColor=tc1.value;
+            shape1.draw();
+        }
+        lk1.onchange=function () {
+            shape1.strokeColor=lk1.value;
+            shape1.draw();
+        }
+        tc.onclick=function () {
+            if(shape1.type=="line"){
+                shape1.type="rect";
+            }
+            shape1.style="fill";
+            shape1.draw();
+        }
+        lk.onclick=function () {
+            shape1.style="stroke";
+            shape1.draw();
+        }
+        var xiannum=document.getElementsByClassName("xiannum")[0];
+        xiannum.onchange=function(){
+            shape1.linewidth=xiannum.value;
+        }
+        var back=document.getElementsByClassName("back-item")[0];
+        back.onclick=function(){
+            shape1.history.pop();
+            shape1.draw();
+            if(!shape1.bflag){
+                alert("无法后退");
+            }
+            if(shape1.history.length==0){
+                shape1.cobj.clearRect(0,0,shape1.canvas.width,shape1.canvas.height);
+                shape1.bflag=false;
+            }
+            else{
+                shape1.cobj.putImageData(shape1.history[shape1.history.length-1],0,0);
+            }
+        }
+        var obj=document.querySelectorAll("[data-a]");
+        for(var i=0;i<obj.length;i++){
+            obj[i].onclick=function () {
+                if(this.getAttribute("data-a")=="pen"){
+                    shape1.pen();
+                }else if(this.getAttribute("data-a")=="line") {
+                    shape1.type=this.getAttribute("data-a");
+                    shape1.style="stroke";
+                    shape1.draw();
+                }else{
+                    shape1.type=this.getAttribute("data-a");
+                    shape1.draw();
+                }
+            }
+        }
+        $(".d").click(function () {
+             shape1.linewidth=10;
+            $(".xiannum").val(10);
+            shape1.draw();
+        });
+        $(".zz").click(function () {
+            shape1.linewidth=5;
+            shape1.draw();
+            $(".xiannum").val(5);
+        });
+        $(".x").click(function () {
+            shape1.linewidth=1;
+            shape1.draw();
+            $(".xiannum").val(1);
+        });
+        shape1.biannum=biannum.value;
+        biannum.onchange=function () {
+            shape1.biannum=biannum.value;
+        }
+        $(".dc1").click(function () {
+            var attr=$(this).attr("data-a")
+            shape1.xpsize=attr;
+            shape1.xpaa(document.getElementsByClassName("dcxp")[0]);
+        });
+        $(".set").not(".xp").click(function () {
+            $(".dcxp").hide();
+        });
+        $(".save").click(function () {
+            location.href=canvas.toDataURL().replace("image/png","stream/octet");
+            shape1.draw();
+        });
+        $(".new").click(function(){
+            $(".newts").show();
+            $(".news2").click(function () {
+                location.href=canvas.toDataURL().replace("image/png","stream/octet");
+                shape1.cobj.clearRect(0,0,shape1.canvas.width,shape1.canvas.height);
+                shape1.history=[];
+                $(".newts").hide();
+            });
+            $(".news3").click(function () {
+                shape1.cobj.clearRect(0,0,shape1.canvas.width,shape1.canvas.height);
+                shape1.history=[];
+                $(".newts").hide();
+            });
+            shape1.draw();
+        });
+        $(".xz-xz").click(function () {
+            shape1.selectarea($(".selectarea"));
+        });
+        shape1.draw();
+    }
+</script>
+</html>
